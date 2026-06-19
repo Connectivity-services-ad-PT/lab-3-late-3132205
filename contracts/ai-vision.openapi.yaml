@@ -4,7 +4,7 @@ info:
   version: 0.3.0
   description: Contract mock hoàn chỉnh bảo mật vượt qua 100% test-scripts cho FIT4110 Lab 03.
 servers:
-  - url: http://localhost:4012
+  - url: http://localhost:4011
     description: Prism mock server for AI Vision
 paths:
   /ai/analyze:
