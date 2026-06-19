@@ -3,11 +3,10 @@ info:
   title: Smart Campus — IoT Ingestion API
   version: 0.3.0
   description: |
-    Contract mẫu dùng cho FIT4110 Lab 03 — Postman, Mock Server và Contract Testing.
-    Sinh viên có thể thay thế file này bằng openapi.yaml của service nhóm mình từ Lab 02.
+    Contract mẫu dùng cho FIT4110 Lab 03 — Đã sửa đổi port thành 4012 để đồng bộ hệ thống test.
 servers:
-  - url: http://localhost:4010
-    description: Prism mock server
+  - url: http://localhost:4012
+    description: Prism mock server chuẩn hóa port hệ thống
   - url: http://localhost:8000
     description: Local development server
 tags:
@@ -48,7 +47,6 @@ paths:
         Endpoint nhận telemetry từ ESP32 hoặc gateway.
         Request phải có device_id, metric, value và timestamp.
         Trong lab này, ví dụ boundary dùng nhiệt độ hợp lệ từ -40 đến 80.
-        Các nhóm có thể điều chỉnh miền giá trị theo service thật của mình.
       requestBody:
         required: true
         content:
@@ -235,10 +233,7 @@ components:
           type: number
           minimum: -40
           maximum: 80
-          description: |
-            Giá trị mẫu dùng cho boundary test trong Lab 03.
-            Với metric=temperature, miền hợp lệ minh họa là -40 đến 80.
-            Các nhóm cần thay đổi min/max cho đúng nghiệp vụ của service mình.
+          description: Miền hợp lệ minh họa là -40 đến 80.
           example: 31.5
         unit:
           type: string
