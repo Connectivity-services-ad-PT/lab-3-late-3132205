@@ -1,0 +1,292 @@
+{
+	"info": {
+		"name": "FIT4110_lab03_ai_vision",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01_Functional",
+			"item": [
+				{
+					"name": "Analyze Image Success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response returns analysis results\", function () {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json).to.have.property(\"analysis_id\");",
+									"    pm.expect(json.predictions).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"camera_id\": \"CAM-GATE-01\",\n  \"image_url\": \"https://smart-campus.local/storage/frames/frame_001.jpg\",\n  \"target_type\": \"face\",\n  \"min_confidence\": 0.5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ai/analyze",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ai",
+								"analyze"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "02_Auth",
+			"item": [
+				{
+					"name": "Analyze Image Missing Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Unauthorized request must return 401\", function () {",
+									"    pm.expect([401, 403]).to.include(pm.response.code);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"camera_id\": \"CAM-GATE-01\",\n  \"image_url\": \"https://smart-campus.local/storage/frames/frame_001.jpg\",\n  \"target_type\": \"face\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ai/analyze",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ai",
+								"analyze"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "03_Negative",
+			"item": [
+				{
+					"name": "Analyze Image Invalid Payload",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Invalid payload returns 400 Bad Request\", function () {",
+									"    pm.expect([400, 422]).to.include(pm.response.code);",
+									"});",
+									"",
+									"pm.test(\"Error matches ProblemDetails RFC 7807\", function () {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json).to.have.property(\"title\");",
+									"    pm.expect(json.status).to.be.within(400, 599);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"camera_id\": \"\",\n  \"target_type\": \"unknown_type\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ai/analyze",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ai",
+								"analyze"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "04_Boundary_Reliability",
+			"item": [
+				{
+					"name": "Analyze Image Confidence Out Of Boundary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Out of range min_confidence is rejected\", function () {",
+									"    pm.expect([400, 422]).to.include(pm.response.code);",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.detail).to.include(\"min_confidence\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"camera_id\": \"CAM-GATE-01\",\n  \"image_url\": \"https://smart-campus.local/storage/frames/frame_001.jpg\",\n  \"target_type\": \"face\",\n  \"min_confidence\": 1.5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ai/analyze",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ai",
+								"analyze"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "05_Consumer-side Smoke",
+			"item": [
+				{
+					"name": "Call IoT Dependency Mock",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"IoT Ingestion dependency mock server is alive\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{iotMockUrl}}/health",
+							"host": [
+								"{{iotMockUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "06_Local-only NonFunctional",
+			"item": [
+				{
+					"name": "Check Latency SLA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.environment.get(\"env\") === \"local\") {",
+									"    pm.test(\"AI Model initialization latency is within SLA (< 1500ms)\", function () {",
+									"        pm.expect(pm.response.responseTime).to.be.below(1500);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
