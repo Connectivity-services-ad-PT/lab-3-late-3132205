@@ -3,7 +3,7 @@ info:
   title: Smart Campus — IoT Ingestion API
   version: 0.3.0
   description: |
-    Contract mẫu dùng cho FIT4110 Lab 03 — Đã sửa đổi port thành 4012 để đồng bộ hệ thống test.
+    Contract mẫu dùng cho FIT4110 Lab 03 — Đã sửa đổi port thành 4010 để đồng bộ hệ thống test.
 servers:
   - url: http://localhost:4010
     description: Prism mock server chuẩn hóa port hệ thống
